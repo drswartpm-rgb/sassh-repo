@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { del } from "@vercel/blob";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
@@ -7,7 +8,7 @@ const updateArticleSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
   pdfUrl: z.string().url().optional(),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.string().url().nullable().optional(),
   published: z.boolean().optional(),
 });
 
@@ -73,6 +74,16 @@ export async function DELETE(
   }
 
   const { id } = await params;
+  const article = await prisma.article.findUnique({ where: { id } });
+  if (!article) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  const blobUrls = [article.pdfUrl, article.imageUrl].filter(Boolean) as string[];
+  if (blobUrls.length > 0) {
+    await del(blobUrls);
+  }
+
   await prisma.article.delete({ where: { id } });
 
   return NextResponse.json({ ok: true });
