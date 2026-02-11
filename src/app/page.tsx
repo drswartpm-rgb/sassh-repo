@@ -40,7 +40,7 @@ export default function Home() {
           }}
         >
           <img
-            src="/ideas4.png"
+            src="/ideas5.png"
             alt="Mountain biker performing a trick over Cape Town"
             className="w-full h-auto block"
           />
