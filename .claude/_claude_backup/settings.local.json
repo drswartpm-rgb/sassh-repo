@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start \"\" \"C:\\\\claude\\\\sassh-repo\\\\index.html\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: SASSH landing page\n\nSingle-file landing page with dark theme, login/signup modals,\nform validation, and responsive design.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(gh repo create:*)"
+    ]
+  }
+}
