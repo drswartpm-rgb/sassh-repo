@@ -77,7 +77,7 @@ export default async function DashboardPage() {
       <Nav />
       <CategoryBar
         categories={grouped
-          .filter((cat) => cat.articles.length > 0)
+          .filter((cat) => cat.articles.length > 0 && cat.name.toLowerCase() !== "uploads")
           .map((cat) => ({ id: cat.id, name: cat.name }))}
       />
       <main className="min-h-screen pt-40 pb-16 px-6 max-w-6xl mx-auto">
@@ -111,7 +111,7 @@ export default async function DashboardPage() {
               <div className="space-y-10">
                 {grouped.map(
                   (cat) =>
-                    cat.articles.length > 0 && (
+                    cat.articles.length > 0 && cat.name.toLowerCase() !== "uploads" && (
                       <section
                         key={cat.id}
                         id={`category-${cat.id}`}
