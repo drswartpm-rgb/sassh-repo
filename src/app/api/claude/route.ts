@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser } from "@/lib/auth";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import Groq from "groq-sdk";
 
 const chatSchema = z.object({
   message: z.string().min(1),
 });
+
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 export async function POST(req: NextRequest) {
   const user = await getSessionUser();
@@ -26,23 +28,32 @@ export async function POST(req: NextRequest) {
   try {
     const { message } = parsed.data;
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are the SASSH AI assistant, helping medical professionals with hand surgery topics. You summarise articles, suggest reading sequences, and answer clinical questions. Keep responses concise and professional.",
+        },
+        { role: "user", content: message },
+      ],
+      max_tokens: 1024,
+    });
 
-    const result = await model.generateContent(message);
-    const text = result.response.text();
+    const text = completion.choices[0]?.message?.content;
 
     return NextResponse.json({
       content: text || "I couldn't generate a response this time.",
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error("Gemini API error:", msg);
+    console.error("Groq API error:", msg);
 
-    const isRateLimit = msg.includes("429") || msg.includes("quota");
+    const isRateLimit = msg.includes("429") || msg.includes("rate_limit");
     return NextResponse.json(
       { error: isRateLimit
-          ? "Search limits exceeded, try again later."
+          ? "Rate limit reached, try again in a moment."
           : "Something went wrong, please try again."
       },
       { status: isRateLimit ? 429 : 500 }

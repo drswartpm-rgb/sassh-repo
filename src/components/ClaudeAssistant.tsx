@@ -73,7 +73,7 @@ export default function ClaudeAssistant() {
     } catch (err) {
       console.error(err);
       setError(
-        err instanceof Error ? err.message : "Something went wrong talking to Claude."
+        err instanceof Error ? err.message : "Something went wrong, please try again."
       );
     } finally {
       setIsLoading(false);
@@ -106,7 +106,7 @@ export default function ClaudeAssistant() {
         </div>
         <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] text-[var(--text-secondary)]">
           <span className="inline-flex w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_0_4px_rgba(16,185,129,0.16)]" />
-          <span>Powered by Gemini</span>
+          <span>Powered by Llama 3.3</span>
         </div>
       </div>
 
