@@ -227,7 +227,7 @@ export default function Nav() {
         .theme-toggle:hover {
           color: var(--text);
           background: var(--hover-bg);
-          transform: translateY(-1px);
+          transform: translateY(-2px) scale(1.08);
         }
         .theme-toggle:focus-visible {
           outline: 2px solid var(--accent);
@@ -249,7 +249,7 @@ export default function Nav() {
         .settings-gear:hover {
           color: var(--text);
           background: var(--hover-bg);
-          transform: translateY(-1px);
+          transform: translateY(-2px) scale(1.08);
         }
         .settings-gear:focus-visible {
           outline: 2px solid var(--accent);
