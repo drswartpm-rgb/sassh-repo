@@ -21,6 +21,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "USER_NOT_FOUND" }, { status: 404 });
     }
 
+    if (user.status === "DELETED") {
+      return NextResponse.json({ error: "Account has been deleted." }, { status: 403 });
+    }
+
     // Create session cookie (5 days)
     const expiresIn = 60 * 60 * 24 * 5 * 1000;
     const sessionCookie = await adminAuth.createSessionCookie(token, { expiresIn });
@@ -38,6 +42,9 @@ export async function POST(req: NextRequest) {
       id: user.id,
       email: user.email,
       name: user.name,
+      surname: user.surname,
+      cityOfPractice: user.cityOfPractice,
+      cellNumber: user.cellNumber,
       role: user.role,
       status: user.status,
     });

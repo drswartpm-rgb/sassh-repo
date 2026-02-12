@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import Nav from "@/components/Nav";
+import CategoryBar from "@/components/CategoryBar";
 import ArticleCard from "@/components/ArticleCard";
 
 export default async function DashboardPage() {
@@ -73,7 +74,12 @@ export default async function DashboardPage() {
   return (
     <>
       <Nav />
-      <main className="min-h-screen pt-28 pb-16 px-6 max-w-6xl mx-auto">
+      <CategoryBar
+        categories={grouped
+          .filter((cat) => cat.articles.length > 0)
+          .map((cat) => ({ id: cat.id, name: cat.name }))}
+      />
+      <main className="min-h-screen pt-40 pb-16 px-6 max-w-6xl mx-auto">
         <h1 className="font-[family-name:var(--font-display)] text-4xl mb-2 tracking-tight">
           Articles
         </h1>
@@ -105,7 +111,8 @@ export default async function DashboardPage() {
                 cat.articles.length > 0 && (
                   <section
                     key={cat.id}
-                    className="p-6 bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl"
+                    id={`category-${cat.id}`}
+                    className="p-6 bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl scroll-mt-48"
                   >
                     <h2 className="font-[family-name:var(--font-display)] text-xl mb-5 tracking-tight">
                       {cat.name}
