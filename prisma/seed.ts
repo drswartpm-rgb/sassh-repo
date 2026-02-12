@@ -20,6 +20,23 @@ async function main() {
     });
   }
   console.log("Seeded 6 categories");
+
+  // Sync bot user for Dropbox article sync
+  await prisma.user.upsert({
+    where: { email: "dropbox-sync@sassh.system" },
+    update: {},
+    create: {
+      firebaseUid: "system-dropbox-sync",
+      email: "dropbox-sync@sassh.system",
+      name: "Dropbox",
+      surname: "Sync",
+      cityOfPractice: "System",
+      cellNumber: "0000000000",
+      role: "ADMIN",
+      status: "APPROVED",
+    },
+  });
+  console.log("Seeded sync bot user");
 }
 
 main()

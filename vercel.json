@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/sync/dropbox",
+      "schedule": "0 */6 * * *"
+    }
+  ]
+}

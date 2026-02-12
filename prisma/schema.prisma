@@ -44,6 +44,8 @@ model Article {
   authorId    String
   category    Category? @relation(fields: [categoryId], references: [id])
   categoryId  String?
+  dropboxPath String?   @unique
+  syncedAt    DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
