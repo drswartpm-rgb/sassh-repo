@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser } from "@/lib/auth";
-import { claude } from "@/lib/claude";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const chatSchema = z.object({
   message: z.string().min(1),
-  model: z.string().optional().default("claude-haiku-4-5-20251001"),
-  maxTokens: z.number().optional().default(1024),
 });
 
 export async function POST(req: NextRequest) {
@@ -26,29 +24,22 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const { message, model, maxTokens } = parsed.data;
+    const { message } = parsed.data;
 
-    const response = await claude.messages.create({
-      model,
-      max_tokens: maxTokens,
-      messages: [
-        {
-          role: "user",
-          content: message,
-        },
-      ],
-    });
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+    const result = await model.generateContent(message);
+    const text = result.response.text();
 
     return NextResponse.json({
-      content: response.content[0].type === "text" ? response.content[0].text : "",
-      model: response.model,
-      usage: response.usage,
+      content: text || "I couldn't generate a response this time.",
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error("Claude API error:", msg);
+    console.error("Gemini API error:", msg);
     return NextResponse.json(
-      { error: `Failed to get response from Claude: ${msg}` },
+      { error: `Failed to get response: ${msg}` },
       { status: 500 }
     );
   }
