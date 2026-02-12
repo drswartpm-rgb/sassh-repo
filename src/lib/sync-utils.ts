@@ -46,11 +46,12 @@ export async function runSync(): Promise<SyncStats> {
     let metadata: ArticleMetadata[];
     try {
       metadata = await getMetadata(folder.path);
-    } catch {
+    } catch (err) {
+      console.error("[sync] metadata error for", folder.name, err);
       stats.errors.push({
         folder: folder.name,
         file: "metadata.json",
-        error: "Could not read metadata.json",
+        error: err instanceof Error ? err.message : "Could not read metadata.json",
       });
       continue;
     }

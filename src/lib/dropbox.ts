@@ -1,9 +1,10 @@
 import { Dropbox } from "dropbox";
 
 let cachedClient: Dropbox | null = null;
+let cachedAccessToken = "";
 let tokenExpiry = 0;
 
-async function getAccessToken(): Promise<string> {
+async function refreshAccessToken(): Promise<string> {
   const res = await fetch("https://api.dropbox.com/oauth2/token", {
     method: "POST",
     headers: {
@@ -26,7 +27,15 @@ async function getAccessToken(): Promise<string> {
 
   const data = await res.json();
   tokenExpiry = Date.now() + (data.expires_in - 60) * 1000;
-  return data.access_token;
+  cachedAccessToken = data.access_token;
+  return cachedAccessToken;
+}
+
+async function getAccessToken(): Promise<string> {
+  if (cachedAccessToken && Date.now() < tokenExpiry) {
+    return cachedAccessToken;
+  }
+  return refreshAccessToken();
 }
 
 export async function getDropboxClient(): Promise<Dropbox> {
@@ -35,11 +44,11 @@ export async function getDropboxClient(): Promise<Dropbox> {
   }
 
   const accessToken = await getAccessToken();
-  cachedClient = new Dropbox({ accessToken });
+  cachedClient = new Dropbox({ accessToken, fetch: globalThis.fetch });
   return cachedClient;
 }
 
-const ROOT_PATH = () => process.env.DROPBOX_ROOT_PATH || "/Apps/SASSH";
+const ROOT_PATH = () => process.env.DROPBOX_ROOT_PATH || "";
 
 export async function listCategoryFolders(): Promise<
   { name: string; path: string }[]
@@ -53,11 +62,21 @@ export async function listCategoryFolders(): Promise<
 }
 
 export async function downloadFile(path: string): Promise<Buffer> {
-  const dbx = await getDropboxClient();
-  const res = await dbx.filesDownload({ path });
-  // The Dropbox SDK adds fileBinary to the result for Node.js
-  const blob = (res.result as any).fileBinary as Buffer;
-  return Buffer.from(blob);
+  const accessToken = await getAccessToken();
+  const res = await fetch("https://content.dropboxapi.com/2/files/download", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Dropbox-API-Arg": JSON.stringify({ path }),
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Download failed (${res.status}) for ${path}`);
+  }
+
+  const arrayBuffer = await res.arrayBuffer();
+  return Buffer.from(arrayBuffer);
 }
 
 export interface ArticleMetadata {
