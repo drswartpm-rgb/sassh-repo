@@ -90,11 +90,11 @@ export default async function DashboardPage() {
 
         {/* Counter cards */}
         <div className="grid grid-cols-2 gap-4 mb-10">
-          <div className="p-5 bg-white/[0.03] border border-[var(--glass-border)] rounded-2xl">
+          <div className="p-5 bg-[var(--glass)] border border-[var(--glass-border)] rounded-2xl">
             <p className="text-3xl font-semibold tracking-tight">{articles.length}</p>
             <p className="text-sm text-[var(--text-secondary)] mt-1">Total Articles</p>
           </div>
-          <div className="p-5 bg-white/[0.03] border border-[var(--glass-border)] rounded-2xl">
+          <div className="p-5 bg-[var(--glass)] border border-[var(--glass-border)] rounded-2xl">
             <p className="text-3xl font-semibold tracking-tight">{myArticleCount}</p>
             <p className="text-sm text-[var(--text-secondary)] mt-1">My Uploads</p>
           </div>
@@ -105,7 +105,7 @@ export default async function DashboardPage() {
             {articles.length === 0 ? (
               <div className="text-center py-20 text-[var(--text-secondary)]">
                 <p className="text-lg mb-2">No articles yet</p>
-                <p className="text-sm text-white/40">Check back soon for new content.</p>
+                <p className="text-sm text-[var(--text-muted)]">Check back soon for new content.</p>
               </div>
             ) : (
               <div className="space-y-10">
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
                       <section
                         key={cat.id}
                         id={`category-${cat.id}`}
-                        className="p-6 bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl scroll-mt-48"
+                        className="p-6 bg-[var(--glass)] border border-[var(--glass-border)] rounded-2xl scroll-mt-48"
                       >
                         <h2 className="font-[family-name:var(--font-display)] text-xl mb-5 tracking-tight">
                           {cat.name}
@@ -140,7 +140,7 @@ export default async function DashboardPage() {
                 )}
 
                 {uncategorized.length > 0 && (
-                  <section className="p-6 bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl scroll-mt-48">
+                  <section className="p-6 bg-[var(--glass)] border border-[var(--glass-border)] rounded-2xl scroll-mt-48">
                     <h2 className="font-[family-name:var(--font-display)] text-xl mb-5 tracking-tight">
                       Uncategorized
                       <span className="ml-2 text-sm font-normal text-[var(--text-secondary)]">

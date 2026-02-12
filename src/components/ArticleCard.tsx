@@ -14,10 +14,10 @@ export default function ArticleCard({ id, title, description, imageUrl, author }
   return (
     <Link
       href={`/articles/${id}`}
-      className="block bg-white/[0.03] border border-[var(--glass-border)] rounded-2xl overflow-hidden hover:border-[var(--border-focus)] hover:-translate-y-1 transition-all group"
+      className="block bg-[var(--glass)] border border-[var(--glass-border)] rounded-2xl overflow-hidden hover:border-[var(--border-focus)] hover:-translate-y-1 transition-all group"
     >
       {imageUrl && (
-        <div className="aspect-video bg-white/[0.02] overflow-hidden">
+        <div className="aspect-video bg-[var(--glass)] overflow-hidden">
           <img
             src={imageUrl}
             alt={title}
@@ -32,7 +32,7 @@ export default function ArticleCard({ id, title, description, imageUrl, author }
         <p className="text-sm text-[var(--text-secondary)] leading-relaxed line-clamp-2 mb-3">
           {description}
         </p>
-        <p className="text-xs text-white/40">
+        <p className="text-xs text-[var(--text-muted)]">
           By {author.name} {author.surname}
         </p>
       </div>

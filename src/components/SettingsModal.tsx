@@ -116,17 +116,17 @@ export default function SettingsModal({ isOpen, onClose, onUpdated }: Props) {
   return (
     <div
       ref={overlayRef}
-      className="modal-overlay fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-[8px] p-6 active"
+      className="modal-overlay fixed inset-0 z-[200] flex items-center justify-center bg-[var(--bg-overlay)] backdrop-blur-[8px] p-6 active"
       role="dialog"
       aria-modal="true"
       aria-labelledby="settingsTitle"
       onClick={(e) => e.target === overlayRef.current && onClose()}
     >
-      <div className="modal-panel bg-[#0f0f0f] border border-[var(--border)] rounded-[20px] p-10 w-full max-w-[480px] relative">
+      <div className="modal-panel bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[20px] p-10 w-full max-w-[480px] relative">
         <button
           onClick={onClose}
           aria-label="Close"
-          className="absolute top-4 right-4 w-8 h-8 rounded-lg border border-[var(--border)] bg-transparent text-[var(--text-secondary)] flex items-center justify-center text-lg hover:bg-white/[0.06] hover:text-white transition-all"
+          className="absolute top-4 right-4 w-8 h-8 rounded-lg border border-[var(--border)] bg-transparent text-[var(--text-secondary)] flex items-center justify-center text-lg hover:bg-[var(--hover-bg)] hover:text-[var(--text)] transition-all"
         >
           &times;
         </button>

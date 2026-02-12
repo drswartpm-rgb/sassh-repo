@@ -85,7 +85,7 @@ export default function ClaudeAssistant() {
   }
 
   return (
-    <section className="p-5 sm:p-6 bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl shadow-[0_18px_60px_rgba(0,0,0,0.45)] relative overflow-hidden">
+    <section className="p-5 sm:p-6 bg-[var(--glass)] border border-[var(--glass-border)] rounded-2xl shadow-[0_18px_60px_rgba(0,0,0,0.45)] relative overflow-hidden">
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 opacity-[0.55]"
@@ -120,7 +120,7 @@ export default function ClaudeAssistant() {
             key={prompt}
             type="button"
             onClick={() => handleQuickPrompt(prompt)}
-            className="text-[0.68rem] sm:text-[0.7rem] px-2.5 py-1 rounded-full border border-white/10 bg-black/25 text-[var(--text-secondary)] hover:text-white hover:border-white/25 transition-colors duration-150"
+            className="text-[0.68rem] sm:text-[0.7rem] px-2.5 py-1 rounded-full border border-[var(--border)] bg-[var(--glass)] text-[var(--text-secondary)] hover:text-[var(--text)] hover:border-[var(--glass-border)] transition-colors duration-150"
           >
             {prompt}
           </button>
@@ -141,8 +141,8 @@ export default function ClaudeAssistant() {
             <div
               className={`max-w-[82%] rounded-2xl px-3 py-2.5 text-[0.8rem] leading-relaxed ${
                 msg.role === "user"
-                  ? "bg-white text-black shadow-[0_10px_30px_rgba(0,0,0,0.55)]"
-                  : "bg-white/[0.03] border border-white/10 text-[var(--text)]"
+                  ? "bg-[var(--bubble-user-bg)] text-[var(--bubble-user-text)] shadow-[0_10px_30px_rgba(0,0,0,0.55)]"
+                  : "bg-[var(--bubble-assistant-bg)] border border-[var(--bubble-assistant-border)] text-[var(--text)]"
               }`}
             >
               {msg.content}
@@ -152,7 +152,7 @@ export default function ClaudeAssistant() {
 
         {isLoading && (
           <div className="flex items-center gap-2 text-xs text-[var(--text-secondary)]">
-            <span className="inline-flex w-1.5 h-1.5 rounded-full bg-white/60 animate-pulse" />
+            <span className="inline-flex w-1.5 h-1.5 rounded-full bg-[var(--text-secondary)] animate-pulse" />
             <span>Thinking about your question…</span>
           </div>
         )}
@@ -170,13 +170,13 @@ export default function ClaudeAssistant() {
               onChange={(e) => setInput(e.target.value)}
               rows={2}
               placeholder="Ask about a case, a concept, or how to use the library effectively…"
-              className="w-full text-xs sm:text-[0.8rem] resize-none rounded-xl border border-[var(--glass-border)] bg-black/40 text-[var(--text)] placeholder:text-white/35 px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/70 focus:border-blue-400/70"
+              className="w-full text-xs sm:text-[0.8rem] resize-none rounded-xl border border-[var(--glass-border)] bg-[var(--input-bg)] text-[var(--text)] placeholder:text-[var(--input-placeholder)] px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/70 focus:border-[var(--accent)]/70"
             />
           </div>
           <button
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="shrink-0 px-3.5 py-2.5 rounded-xl bg-white text-black text-xs font-medium tracking-tight shadow-[0_16px_40px_rgba(0,0,0,0.65)] disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-[1px] hover:shadow-[0_20px_55px_rgba(0,0,0,0.75)] transition-transform duration-150"
+            className="shrink-0 px-3.5 py-2.5 rounded-xl bg-[var(--btn-inverse-bg)] text-[var(--btn-inverse-text)] text-xs font-medium tracking-tight shadow-[0_16px_40px_rgba(0,0,0,0.65)] disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-[1px] hover:shadow-[0_20px_55px_rgba(0,0,0,0.75)] transition-transform duration-150"
           >
             {isLoading ? "Sending…" : "Ask"}
           </button>

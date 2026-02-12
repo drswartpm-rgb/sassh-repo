@@ -2,9 +2,12 @@
 
 :root {
   --bg: #000000;
-  --bg-elevated: #0a0a0a;
+  --bg-elevated: #0f0f0f;
+  --bg-nav: rgba(0, 0, 0, 0.9);
+  --bg-overlay: rgba(0, 0, 0, 0.7);
   --text: #ffffff;
   --text-secondary: #b4b4b4;
+  --text-muted: rgba(255, 255, 255, 0.4);
   --accent: #3b82f6;
   --accent-hover: #2563eb;
   --success: #10b981;
@@ -14,6 +17,83 @@
   --border-focus: rgba(59, 130, 246, 0.5);
   --glass: rgba(255, 255, 255, 0.03);
   --glass-border: rgba(255, 255, 255, 0.08);
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --input-bg: rgba(255, 255, 255, 0.04);
+  --input-bg-focus: rgba(255, 255, 255, 0.06);
+  --input-placeholder: rgba(255, 255, 255, 0.25);
+  --select-bg: #1a1a1a;
+  --btn-inverse-bg: #ffffff;
+  --btn-inverse-text: #000000;
+  --btn-inverse-hover-bg: #e0e0e0;
+  --btn-inverse-shadow: rgba(255, 255, 255, 0.1);
+  --bubble-user-bg: #ffffff;
+  --bubble-user-text: #000000;
+  --bubble-assistant-bg: rgba(255, 255, 255, 0.03);
+  --bubble-assistant-border: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] {
+  --bg: #f8f9fa;
+  --bg-elevated: #ffffff;
+  --bg-nav: rgba(255, 255, 255, 0.92);
+  --bg-overlay: rgba(0, 0, 0, 0.4);
+  --text: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: rgba(17, 24, 39, 0.4);
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --success: #059669;
+  --error: #dc2626;
+  --pending: #d97706;
+  --border: rgba(0, 0, 0, 0.1);
+  --border-focus: rgba(59, 130, 246, 0.5);
+  --glass: rgba(0, 0, 0, 0.02);
+  --glass-border: rgba(0, 0, 0, 0.08);
+  --hover-bg: rgba(0, 0, 0, 0.05);
+  --input-bg: rgba(0, 0, 0, 0.03);
+  --input-bg-focus: rgba(0, 0, 0, 0.05);
+  --input-placeholder: rgba(0, 0, 0, 0.3);
+  --select-bg: #ffffff;
+  --btn-inverse-bg: #111827;
+  --btn-inverse-text: #ffffff;
+  --btn-inverse-hover-bg: #1f2937;
+  --btn-inverse-shadow: rgba(0, 0, 0, 0.15);
+  --bubble-user-bg: #111827;
+  --bubble-user-text: #ffffff;
+  --bubble-assistant-bg: rgba(0, 0, 0, 0.03);
+  --bubble-assistant-border: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="scrub-green"] {
+  --bg: #0a1f1a;
+  --bg-elevated: #0d2922;
+  --bg-nav: rgba(10, 31, 26, 0.92);
+  --bg-overlay: rgba(5, 15, 12, 0.75);
+  --text: #e8f5f0;
+  --text-secondary: #8bb5a6;
+  --text-muted: rgba(232, 245, 240, 0.4);
+  --accent: #10b981;
+  --accent-hover: #059669;
+  --success: #10b981;
+  --error: #ef4444;
+  --pending: #f59e0b;
+  --border: rgba(16, 185, 129, 0.15);
+  --border-focus: rgba(16, 185, 129, 0.5);
+  --glass: rgba(16, 185, 129, 0.04);
+  --glass-border: rgba(16, 185, 129, 0.1);
+  --hover-bg: rgba(16, 185, 129, 0.08);
+  --input-bg: rgba(16, 185, 129, 0.06);
+  --input-bg-focus: rgba(16, 185, 129, 0.1);
+  --input-placeholder: rgba(139, 181, 166, 0.5);
+  --select-bg: #0d2922;
+  --btn-inverse-bg: #10b981;
+  --btn-inverse-text: #0a1f1a;
+  --btn-inverse-hover-bg: #34d399;
+  --btn-inverse-shadow: rgba(16, 185, 129, 0.2);
+  --bubble-user-bg: #10b981;
+  --bubble-user-text: #0a1f1a;
+  --bubble-assistant-bg: rgba(16, 185, 129, 0.05);
+  --bubble-assistant-border: rgba(16, 185, 129, 0.15);
 }
 
 html {
@@ -94,7 +174,7 @@ body {
   padding: 11px 14px;
   font-size: 0.9rem;
   color: var(--text);
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--input-bg);
   border: 1px solid var(--border);
   border-radius: 10px;
   outline: none;
@@ -102,19 +182,19 @@ body {
 }
 
 .form-input::placeholder {
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--input-placeholder);
 }
 
 .form-input:focus {
   border-color: var(--border-focus);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--input-bg-focus);
   transform: translateY(-1px);
   box-shadow: 0 2px 12px rgba(59, 130, 246, 0.08);
 }
 
 select.form-input option {
-  background: #1a1a1a;
-  color: #ffffff;
+  background: var(--select-bg);
+  color: var(--text);
 }
 
 .form-input.input-error {

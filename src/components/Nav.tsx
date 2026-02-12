@@ -7,6 +7,13 @@ import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
 import SettingsModal from "./SettingsModal";
 import { useRouter } from "next/navigation";
+import { useTheme } from "./ThemeProvider";
+
+const THEME_LABELS: Record<string, string> = {
+  dark: "Dark",
+  light: "Light",
+  "scrub-green": "Scrub",
+};
 
 export default function Nav() {
   const [modal, setModal] = useState<"login" | "signup" | "settings" | null>(null);
@@ -17,6 +24,7 @@ export default function Nav() {
     role?: string;
   } | null>(null);
   const router = useRouter();
+  const { theme, cycleTheme } = useTheme();
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
@@ -70,17 +78,17 @@ export default function Nav() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-center px-6 py-4 bg-black/90 backdrop-blur-md">
+      <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-center px-6 py-4 bg-[var(--bg-nav)] backdrop-blur-md">
         <div className="absolute left-6 top-1/2 -translate-y-1/2">
           {user?.name && (
             <span className="text-sm text-[var(--text-secondary)] pl-2 select-none">
-              Welcome, <span className="text-white font-medium">{user.name}</span>
+              Welcome, <span className="text-[var(--text)] font-medium">{user.name}</span>
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-[14px] bg-white/[0.04] border border-[var(--glass-border)] backdrop-blur-[20px]">
-          <span className="font-[family-name:var(--font-display)] text-[1.15rem] tracking-tight text-white mr-3 select-none">
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-[14px] bg-[var(--glass)] border border-[var(--glass-border)] backdrop-blur-[20px]">
+          <span className="font-[family-name:var(--font-display)] text-[1.15rem] tracking-tight text-[var(--text)] mr-3 select-none">
             SASSH
           </span>
           {user ? (
@@ -115,7 +123,24 @@ export default function Nav() {
           )}
         </div>
 
-        <div className="absolute right-6 top-1/2 -translate-y-1/2">
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          <button
+            onClick={cycleTheme}
+            className="theme-toggle"
+            aria-label={`Switch theme (current: ${THEME_LABELS[theme]})`}
+            title={`Theme: ${THEME_LABELS[theme]}`}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="8" r="3" stroke="currentColor" strokeWidth="1.5"/>
+              <circle cx="3" cy="3" r="1.5" fill="currentColor" opacity="0.4"/>
+              <circle cx="13" cy="3" r="1.5" fill="currentColor" opacity="0.6"/>
+              <circle cx="3" cy="13" r="1.5" fill="currentColor" opacity="0.8"/>
+              <circle cx="13" cy="13" r="1.5" fill="currentColor" opacity="0.5"/>
+            </svg>
+            <span className="text-[10px] font-medium tracking-wide uppercase">
+              {THEME_LABELS[theme]}
+            </span>
+          </button>
           {user && (
             <button
               onClick={() => setModal("settings")}
@@ -174,7 +199,7 @@ export default function Nav() {
         }
         .btn-ghost:hover {
           color: var(--text);
-          background: rgba(255, 255, 255, 0.06);
+          background: var(--hover-bg);
           transform: translateY(-1px);
         }
         .btn-primary {
@@ -182,9 +207,31 @@ export default function Nav() {
           color: var(--bg);
         }
         .btn-primary:hover {
-          background: #e0e0e0;
+          background: var(--btn-inverse-hover-bg);
           transform: translateY(-1px);
-          box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1);
+          box-shadow: 0 4px 16px var(--btn-inverse-shadow);
+        }
+        .theme-toggle {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          height: 36px;
+          padding: 0 10px;
+          border-radius: 10px;
+          border: 1px solid var(--border);
+          background: transparent;
+          color: var(--text-secondary);
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .theme-toggle:hover {
+          color: var(--text);
+          background: var(--hover-bg);
+          transform: translateY(-1px);
+        }
+        .theme-toggle:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
         }
         .settings-gear {
           display: flex;
@@ -201,7 +248,7 @@ export default function Nav() {
         }
         .settings-gear:hover {
           color: var(--text);
-          background: rgba(255, 255, 255, 0.06);
+          background: var(--hover-bg);
           transform: translateY(-1px);
         }
         .settings-gear:focus-visible {

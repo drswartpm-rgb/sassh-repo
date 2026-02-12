@@ -26,7 +26,7 @@ export default async function ArticlePage({
       <main className="min-h-screen pt-28 pb-16 px-6 max-w-4xl mx-auto">
         <Link
           href="/dashboard"
-          className="text-sm text-[var(--text-secondary)] hover:text-white transition-colors mb-6 inline-block"
+          className="text-sm text-[var(--text-secondary)] hover:text-[var(--text)] transition-colors mb-6 inline-block"
         >
           &larr; Back to articles
         </Link>
@@ -35,7 +35,7 @@ export default async function ArticlePage({
           {article.title}
         </h1>
         <p className="text-[var(--text-secondary)] mb-2">{article.description}</p>
-        <p className="text-xs text-white/40 mb-8">
+        <p className="text-xs text-[var(--text-muted)] mb-8">
           By {article.author.name} {article.author.surname} &middot;{" "}
           {article.createdAt.toLocaleDateString()}
         </p>
@@ -50,7 +50,7 @@ export default async function ArticlePage({
           </div>
         )}
 
-        <div className="rounded-2xl overflow-hidden border border-[var(--glass-border)] bg-white/[0.02]">
+        <div className="rounded-2xl overflow-hidden border border-[var(--glass-border)] bg-[var(--glass)]">
           <iframe
             src={article.pdfUrl}
             className="w-full h-[80vh]"

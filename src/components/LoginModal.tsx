@@ -148,17 +148,17 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: Props)
   return (
     <div
       ref={overlayRef}
-      className={`modal-overlay fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-[8px] p-6 ${isOpen ? "active" : ""}`}
+      className={`modal-overlay fixed inset-0 z-[200] flex items-center justify-center bg-[var(--bg-overlay)] backdrop-blur-[8px] p-6 ${isOpen ? "active" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-labelledby="loginTitle"
       onClick={(e) => e.target === overlayRef.current && handleClose()}
     >
-      <div className="modal-panel bg-[#0f0f0f] border border-[var(--border)] rounded-[20px] p-10 w-full max-w-[440px] relative">
+      <div className="modal-panel bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[20px] p-10 w-full max-w-[440px] relative">
         <button
           onClick={handleClose}
           aria-label="Close"
-          className="absolute top-4 right-4 w-8 h-8 rounded-lg border border-[var(--border)] bg-transparent text-[var(--text-secondary)] flex items-center justify-center text-lg hover:bg-white/[0.06] hover:text-white transition-all"
+          className="absolute top-4 right-4 w-8 h-8 rounded-lg border border-[var(--border)] bg-transparent text-[var(--text-secondary)] flex items-center justify-center text-lg hover:bg-[var(--hover-bg)] hover:text-[var(--text)] transition-all"
         >
           &times;
         </button>
@@ -237,7 +237,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: Props)
         <button
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full py-3 text-sm font-medium rounded-[10px] border border-[var(--border)] bg-transparent text-[var(--text-secondary)] hover:text-white hover:bg-white/[0.06] transition-all cursor-pointer disabled:opacity-50"
+          className="w-full py-3 text-sm font-medium rounded-[10px] border border-[var(--border)] bg-transparent text-[var(--text-secondary)] hover:text-[var(--text)] hover:bg-[var(--hover-bg)] transition-all cursor-pointer disabled:opacity-50"
         >
           Continue with Google
         </button>
