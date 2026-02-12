@@ -4,7 +4,7 @@ import {
   listCategoryFolders,
   downloadFile,
   getMetadata,
-  ArticleMetadata,
+  listFilesRecursive,
 } from "@/lib/dropbox";
 
 const SYNC_BOT_EMAIL = "dropbox-sync@sassh.system";
@@ -43,23 +43,42 @@ export async function runSync(): Promise<SyncStats> {
   const folders = await listCategoryFolders();
 
   for (const folder of folders) {
-    let metadata: ArticleMetadata[];
+    let files;
     try {
-      metadata = await getMetadata(folder.path);
+      files = await listFilesRecursive(folder.path);
     } catch (err) {
-      console.error("[sync] metadata error for", folder.name, err);
+      console.error("[sync] list error for", folder.name, err);
       stats.errors.push({
         folder: folder.name,
-        file: "metadata.json",
-        error: err instanceof Error ? err.message : "Could not read metadata.json",
+        file: "*",
+        error: err instanceof Error ? err.message : "Could not list folder",
       });
       continue;
     }
 
+    // Skip empty folders
+    const hasPdfs = files.some((f) => f.name.toLowerCase().endsWith(".pdf"));
+    if (!hasPdfs) continue;
+
+    let metadata;
+    try {
+      metadata = await getMetadata(folder.path, files);
+    } catch (err) {
+      console.error("[sync] metadata error for", folder.name, err);
+      stats.errors.push({
+        folder: folder.name,
+        file: "metadata",
+        error: err instanceof Error ? err.message : "Could not parse metadata",
+      });
+      continue;
+    }
+
+    if (metadata.length === 0) continue;
+
     const category = await ensureCategory(folder.name);
 
     for (const entry of metadata) {
-      const dropboxPath = `${folder.path}/${entry.filename}`;
+      const dropboxPath = entry.path;
 
       try {
         const exists = await prisma.article.findUnique({
@@ -80,12 +99,14 @@ export async function runSync(): Promise<SyncStats> {
 
         // Download and upload cover image if specified
         let imageUrl: string | undefined;
-        if (entry.imageFilename) {
+        const imagePath = entry.imagePath || (entry.imageFilename
+          ? `${folder.path}/${entry.imageFilename}`
+          : undefined);
+
+        if (imagePath) {
           try {
-            const imgBuffer = await downloadFile(
-              `${folder.path}/${entry.imageFilename}`
-            );
-            const ext = entry.imageFilename.split(".").pop() || "jpg";
+            const imgBuffer = await downloadFile(imagePath);
+            const ext = imagePath.split(".").pop() || "jpg";
             const contentType = ext === "png" ? "image/png" : "image/jpeg";
             const imgBlob = await put(
               `articles/sync/${folder.name}/${entry.imageFilename}`,
