@@ -19,7 +19,7 @@ export default function CategoryBar({ categories }: Props) {
           <button
             key={cat.id}
             onClick={() => scrollTo(cat.id)}
-            className="px-3.5 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] text-[var(--text-secondary)] bg-transparent hover:text-[var(--text)] hover:bg-[var(--hover-bg)] transition-all cursor-pointer"
+            className="px-3.5 py-1.5 text-xs font-medium rounded-lg border border-[var(--border)] text-[var(--text-secondary)] bg-transparent hover:text-[var(--text)] hover:bg-[var(--hover-bg)] hover:-translate-y-0.5 hover:scale-[1.06] transition-all cursor-pointer"
           >
             {cat.name}
           </button>

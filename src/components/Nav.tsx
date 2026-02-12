@@ -200,7 +200,7 @@ export default function Nav() {
         .btn-ghost:hover {
           color: var(--text);
           background: var(--hover-bg);
-          transform: translateY(-1px);
+          transform: translateY(-2px) scale(1.06);
         }
         .btn-primary {
           background: var(--text);
@@ -208,7 +208,7 @@ export default function Nav() {
         }
         .btn-primary:hover {
           background: var(--btn-inverse-hover-bg);
-          transform: translateY(-1px);
+          transform: translateY(-2px) scale(1.06);
           box-shadow: 0 4px 16px var(--btn-inverse-shadow);
         }
         .theme-toggle {
