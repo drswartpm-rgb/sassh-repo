@@ -56,8 +56,14 @@ export async function listCategoryFolders(): Promise<
   const dbx = await getDropboxClient();
   const res = await dbx.filesListFolder({ path: ROOT_PATH() });
 
+  const EXCLUDED_FOLDERS = ["uploads"];
+
   return res.result.entries
-    .filter((e) => e[".tag"] === "folder")
+    .filter(
+      (e) =>
+        e[".tag"] === "folder" &&
+        !EXCLUDED_FOLDERS.includes(e.name.toLowerCase())
+    )
     .map((e) => ({ name: e.name, path: e.path_lower! }));
 }
 
@@ -79,16 +85,104 @@ export async function downloadFile(path: string): Promise<Buffer> {
   return Buffer.from(arrayBuffer);
 }
 
+export interface DropboxFileEntry {
+  name: string;
+  path: string;
+  size: number;
+}
+
+export async function listFilesRecursive(
+  folderPath: string
+): Promise<DropboxFileEntry[]> {
+  const dbx = await getDropboxClient();
+  const files: DropboxFileEntry[] = [];
+
+  let res = await dbx.filesListFolder({
+    path: folderPath,
+    recursive: true,
+  });
+
+  for (const entry of res.result.entries) {
+    if (entry[".tag"] === "file") {
+      files.push({
+        name: entry.name,
+        path: entry.path_lower!,
+        size: (entry as any).size ?? 0,
+      });
+    }
+  }
+
+  while (res.result.has_more) {
+    res = await dbx.filesListFolderContinue({
+      cursor: res.result.cursor,
+    });
+    for (const entry of res.result.entries) {
+      if (entry[".tag"] === "file") {
+        files.push({
+          name: entry.name,
+          path: entry.path_lower!,
+          size: (entry as any).size ?? 0,
+        });
+      }
+    }
+  }
+
+  return files;
+}
+
 export interface ArticleMetadata {
   filename: string;
+  path: string;
   title: string;
   description: string;
   imageFilename?: string;
+  imagePath?: string;
+}
+
+function titleFromFilename(filename: string): string {
+  return filename
+    .replace(/\.pdf$/i, "")
+    .replace(/ copy$/i, "")
+    .replace(/[-_]/g, " ")
+    .trim();
 }
 
 export async function getMetadata(
-  folderPath: string
+  folderPath: string,
+  files: DropboxFileEntry[]
 ): Promise<ArticleMetadata[]> {
-  const raw = await downloadFile(`${folderPath}/metadata.json`);
-  return JSON.parse(raw.toString("utf-8"));
+  // Try metadata.json first
+  const metadataFile = files.find(
+    (f) => f.name.toLowerCase() === "metadata.json"
+  );
+  if (metadataFile) {
+    const raw = await downloadFile(metadataFile.path);
+    const parsed = JSON.parse(raw.toString("utf-8"));
+    return parsed.map((entry: any) => ({
+      ...entry,
+      path: `${folderPath}/${entry.filename}`,
+    }));
+  }
+
+  // Auto-generate from PDF filenames
+  const pdfs = files.filter((f) => f.name.toLowerCase().endsWith(".pdf"));
+  const images = files.filter((f) =>
+    /\.(jpg|jpeg|png|webp)$/i.test(f.name)
+  );
+
+  return pdfs.map((pdf) => {
+    const baseName = pdf.name.replace(/\.pdf$/i, "");
+    const image = images.find((img) =>
+      img.name.toLowerCase().startsWith(baseName.toLowerCase().replace(/ copy$/i, ""))
+    );
+
+    return {
+      filename: pdf.name,
+      path: pdf.path,
+      title: titleFromFilename(pdf.name),
+      description: "",
+      imageFilename: image?.name,
+      imagePath: image?.path,
+    };
+  });
 }

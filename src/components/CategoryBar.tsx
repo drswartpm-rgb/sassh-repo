@@ -13,7 +13,7 @@ export default function CategoryBar({ categories }: Props) {
   }
 
   return (
-    <div className="fixed top-[68px] left-0 right-0 z-[90] flex justify-center px-6 py-2">
+    <div className="fixed top-[72px] left-0 right-0 z-[90] flex justify-center px-6 py-2 bg-black/90 backdrop-blur-md">
       <div className="flex items-center gap-2 px-4 py-2 rounded-[12px] bg-white/[0.03] border border-[var(--glass-border)] backdrop-blur-[20px]">
         {categories.map((cat) => (
           <button

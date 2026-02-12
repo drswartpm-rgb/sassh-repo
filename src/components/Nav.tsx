@@ -70,7 +70,7 @@ export default function Nav() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-center px-6 py-4">
+      <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-center px-6 py-4 bg-black/90 backdrop-blur-md">
         <div className="absolute left-6 top-1/2 -translate-y-1/2">
           {user?.name && (
             <span className="text-sm text-[var(--text-secondary)] pl-2 select-none">
@@ -90,12 +90,6 @@ export default function Nav() {
                 className="btn btn-ghost"
               >
                 Dashboard
-              </button>
-              <button
-                onClick={() => router.push("/articles/create")}
-                className="btn btn-ghost"
-              >
-                Upload
               </button>
               {user.role === "ADMIN" && (
                 <button
