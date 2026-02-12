@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runSync } from "@/lib/sync-utils";
+import { getSessionUser } from "@/lib/auth";
 
 export const maxDuration = 300; // 5 minutes for Vercel
 
@@ -16,6 +17,24 @@ export async function GET(req: NextRequest) {
 
   if (!isVercelCron && !isBearer) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const stats = await runSync();
+    return NextResponse.json({ ok: true, ...stats });
+  } catch (err) {
+    console.error("Sync failed:", err);
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Sync failed" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST() {
+  const user = await getSessionUser();
+  if (!user || user.role !== "ADMIN") {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {

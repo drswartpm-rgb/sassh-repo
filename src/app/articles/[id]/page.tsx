@@ -50,13 +50,23 @@ export default async function ArticlePage({
           </div>
         )}
 
-        <div className="rounded-2xl overflow-hidden border border-[var(--glass-border)] bg-[var(--glass)]">
-          <iframe
-            src={article.pdfUrl}
-            className="w-full h-[80vh]"
-            title={`${article.title} PDF`}
-          />
-        </div>
+        {/\.(jpg|jpeg|png|webp)/i.test(article.dropboxPath || article.pdfUrl) ? (
+          <div className="rounded-2xl overflow-hidden border border-[var(--glass-border)] bg-[var(--glass)]">
+            <img
+              src={article.pdfUrl}
+              alt={article.title}
+              className="w-full"
+            />
+          </div>
+        ) : (
+          <div className="rounded-2xl overflow-hidden border border-[var(--glass-border)] bg-[var(--glass)]">
+            <iframe
+              src={article.pdfUrl}
+              className="w-full h-[80vh]"
+              title={`${article.title}`}
+            />
+          </div>
+        )}
       </main>
     </>
   );

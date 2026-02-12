@@ -56,9 +56,11 @@ export async function runSync(): Promise<SyncStats> {
       continue;
     }
 
-    // Skip empty folders
-    const hasPdfs = files.some((f) => f.name.toLowerCase().endsWith(".pdf"));
-    if (!hasPdfs) continue;
+    // Skip folders with no syncable documents
+    const hasDocs = files.some((f) =>
+      /\.(pdf|doc|docx|jpg|jpeg|png)$/i.test(f.name)
+    );
+    if (!hasDocs) continue;
 
     let metadata;
     try {
@@ -89,12 +91,21 @@ export async function runSync(): Promise<SyncStats> {
           continue;
         }
 
-        // Download and upload PDF
-        const pdfBuffer = await downloadFile(dropboxPath);
+        // Download and upload article file
+        const fileBuffer = await downloadFile(dropboxPath);
+        const fileExt = entry.filename.split(".").pop()?.toLowerCase() || "";
+        const contentTypeMap: Record<string, string> = {
+          pdf: "application/pdf",
+          doc: "application/msword",
+          docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          jpg: "image/jpeg",
+          jpeg: "image/jpeg",
+          png: "image/png",
+        };
         const pdfBlob = await put(
           `articles/sync/${folder.name}/${entry.filename}`,
-          pdfBuffer,
-          { access: "public", contentType: "application/pdf" }
+          fileBuffer,
+          { access: "public", contentType: contentTypeMap[fileExt] || "application/octet-stream" }
         );
 
         // Download and upload cover image if specified

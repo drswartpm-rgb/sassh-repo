@@ -5,6 +5,7 @@ import Nav from "@/components/Nav";
 import UserTable from "@/components/UserTable";
 import CategoryManager from "@/components/CategoryManager";
 import AdminArticles from "./AdminArticles";
+import DropboxSyncButton from "./DropboxSyncButton";
 
 export default async function AdminPage() {
   const user = await getSessionUser();
@@ -38,6 +39,13 @@ export default async function AdminPage() {
         <h1 className="font-[family-name:var(--font-display)] text-4xl mb-10 tracking-tight">
           Admin Panel
         </h1>
+
+        <section className="mb-16">
+          <h2 className="font-[family-name:var(--font-display)] text-2xl mb-4">
+            Dropbox Sync
+          </h2>
+          <DropboxSyncButton />
+        </section>
 
         <section className="mb-16">
           <UserTable initialUsers={serializedUsers} />

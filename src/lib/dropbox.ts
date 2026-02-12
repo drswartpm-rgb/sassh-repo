@@ -45,7 +45,22 @@ export async function getDropboxClient(): Promise<Dropbox> {
 
   const accessToken = await getAccessToken();
   cachedClient = new Dropbox({ accessToken, fetch: globalThis.fetch });
+  enforceReadOnly(cachedClient);
   return cachedClient;
+}
+
+const BLOCKED_METHODS = [
+  "filesUpload", "filesUploadSessionStart", "filesUploadSessionAppendV2",
+  "filesUploadSessionFinish", "filesDelete", "filesDeleteV2",
+  "filesDeleteBatch", "filesMoveV2", "filesCopyV2", "filesCreateFolderV2",
+] as const;
+
+function enforceReadOnly(client: Dropbox) {
+  for (const method of BLOCKED_METHODS) {
+    (client as any)[method] = () => {
+      throw new Error(`Dropbox write operation "${method}" is blocked. This client is read-only.`);
+    };
+  }
 }
 
 const ROOT_PATH = () => process.env.DROPBOX_ROOT_PATH || "";
@@ -141,7 +156,7 @@ export interface ArticleMetadata {
 
 function titleFromFilename(filename: string): string {
   return filename
-    .replace(/\.pdf$/i, "")
+    .replace(/\.(pdf|doc|docx|jpg|jpeg|png)$/i, "")
     .replace(/ copy$/i, "")
     .replace(/[-_]/g, " ")
     .trim();
@@ -164,25 +179,43 @@ export async function getMetadata(
     }));
   }
 
-  // Auto-generate from PDF filenames
-  const pdfs = files.filter((f) => f.name.toLowerCase().endsWith(".pdf"));
-  const images = files.filter((f) =>
-    /\.(jpg|jpeg|png|webp)$/i.test(f.name)
-  );
+  // Auto-generate from syncable file types
+  const SYNCABLE_EXTS = /\.(pdf|doc|docx|jpg|jpeg|png)$/i;
+  const DOCUMENT_EXTS = /\.(pdf|doc|docx)$/i;
+  const IMAGE_EXTS = /\.(jpg|jpeg|png)$/i;
 
-  return pdfs.map((pdf) => {
-    const baseName = pdf.name.replace(/\.pdf$/i, "");
+  const docs = files.filter((f) => DOCUMENT_EXTS.test(f.name));
+  const images = files.filter((f) => IMAGE_EXTS.test(f.name));
+
+  // Track which images are used as covers for documents
+  const usedImages = new Set<string>();
+
+  const docEntries = docs.map((doc) => {
+    const baseName = doc.name.replace(/\.(pdf|doc|docx)$/i, "");
     const image = images.find((img) =>
       img.name.toLowerCase().startsWith(baseName.toLowerCase().replace(/ copy$/i, ""))
     );
+    if (image) usedImages.add(image.path);
 
     return {
-      filename: pdf.name,
-      path: pdf.path,
-      title: titleFromFilename(pdf.name),
+      filename: doc.name,
+      path: doc.path,
+      title: titleFromFilename(doc.name),
       description: "",
       imageFilename: image?.name,
       imagePath: image?.path,
     };
   });
+
+  // Standalone images (not used as covers) become their own articles
+  const imageEntries = images
+    .filter((img) => !usedImages.has(img.path))
+    .map((img) => ({
+      filename: img.name,
+      path: img.path,
+      title: titleFromFilename(img.name),
+      description: "",
+    }));
+
+  return [...docEntries, ...imageEntries];
 }
