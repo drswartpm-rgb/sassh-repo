@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import Nav from "@/components/Nav";
 import CategoryBar from "@/components/CategoryBar";
 import ArticleCard from "@/components/ArticleCard";
+import ClaudeAssistant from "@/components/ClaudeAssistant";
 
 export default async function DashboardPage() {
   const user = await getSessionUser();
@@ -99,29 +100,55 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {articles.length === 0 ? (
-          <div className="text-center py-20 text-[var(--text-secondary)]">
-            <p className="text-lg mb-2">No articles yet</p>
-            <p className="text-sm text-white/40">Check back soon for new content.</p>
-          </div>
-        ) : (
-          <div className="space-y-10">
-            {grouped.map(
-              (cat) =>
-                cat.articles.length > 0 && (
-                  <section
-                    key={cat.id}
-                    id={`category-${cat.id}`}
-                    className="p-6 bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl scroll-mt-48"
-                  >
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,2.1fr)_minmax(0,1.1fr)] items-start">
+          <div>
+            {articles.length === 0 ? (
+              <div className="text-center py-20 text-[var(--text-secondary)]">
+                <p className="text-lg mb-2">No articles yet</p>
+                <p className="text-sm text-white/40">Check back soon for new content.</p>
+              </div>
+            ) : (
+              <div className="space-y-10">
+                {grouped.map(
+                  (cat) =>
+                    cat.articles.length > 0 && (
+                      <section
+                        key={cat.id}
+                        id={`category-${cat.id}`}
+                        className="p-6 bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl scroll-mt-48"
+                      >
+                        <h2 className="font-[family-name:var(--font-display)] text-xl mb-5 tracking-tight">
+                          {cat.name}
+                          <span className="ml-2 text-sm font-normal text-[var(--text-secondary)]">
+                            ({cat.articles.length})
+                          </span>
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {cat.articles.map((article) => (
+                            <ArticleCard
+                              key={article.id}
+                              id={article.id}
+                              title={article.title}
+                              description={article.description}
+                              imageUrl={article.imageUrl}
+                              author={article.author}
+                            />
+                          ))}
+                        </div>
+                      </section>
+                    )
+                )}
+
+                {uncategorized.length > 0 && (
+                  <section className="p-6 bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl scroll-mt-48">
                     <h2 className="font-[family-name:var(--font-display)] text-xl mb-5 tracking-tight">
-                      {cat.name}
+                      Uncategorized
                       <span className="ml-2 text-sm font-normal text-[var(--text-secondary)]">
-                        ({cat.articles.length})
+                        ({uncategorized.length})
                       </span>
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {cat.articles.map((article) => (
+                      {uncategorized.map((article) => (
                         <ArticleCard
                           key={article.id}
                           id={article.id}
@@ -133,33 +160,13 @@ export default async function DashboardPage() {
                       ))}
                     </div>
                   </section>
-                )
-            )}
-
-            {uncategorized.length > 0 && (
-              <section className="p-6 bg-white/[0.02] border border-[var(--glass-border)] rounded-2xl">
-                <h2 className="font-[family-name:var(--font-display)] text-xl mb-5 tracking-tight">
-                  Uncategorized
-                  <span className="ml-2 text-sm font-normal text-[var(--text-secondary)]">
-                    ({uncategorized.length})
-                  </span>
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {uncategorized.map((article) => (
-                    <ArticleCard
-                      key={article.id}
-                      id={article.id}
-                      title={article.title}
-                      description={article.description}
-                      imageUrl={article.imageUrl}
-                      author={article.author}
-                    />
-                  ))}
-                </div>
-              </section>
+                )}
+              </div>
             )}
           </div>
-        )}
+
+          <ClaudeAssistant />
+        </div>
       </main>
     </>
   );
