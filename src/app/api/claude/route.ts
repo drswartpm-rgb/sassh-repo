@@ -38,9 +38,14 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
     console.error("Gemini API error:", msg);
+
+    const isRateLimit = msg.includes("429") || msg.includes("quota");
     return NextResponse.json(
-      { error: `Failed to get response: ${msg}` },
-      { status: 500 }
+      { error: isRateLimit
+          ? "Search limits exceeded, try again later."
+          : "Something went wrong, please try again."
+      },
+      { status: isRateLimit ? 429 : 500 }
     );
   }
 }

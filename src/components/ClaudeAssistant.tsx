@@ -183,7 +183,7 @@ export default function ClaudeAssistant() {
         </div>
         {error && (
           <p className="mt-2 text-[0.7rem] text-amber-300/90">
-            {error} Please try again in a moment.
+            {error}
           </p>
         )}
       </form>
