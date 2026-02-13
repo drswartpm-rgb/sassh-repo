@@ -158,7 +158,7 @@ export default function SignupModal({ isOpen, onClose, onSwitchToLogin }: Props)
       aria-labelledby="signupTitle"
       onClick={(e) => e.target === overlayRef.current && handleClose()}
     >
-      <div className="modal-panel bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[20px] p-10 w-full max-w-[480px] relative">
+      <div className="modal-panel bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[20px] p-6 sm:p-10 w-full max-w-[480px] relative">
         <button
           onClick={handleClose}
           aria-label="Close"

@@ -4,10 +4,16 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import {
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   GoogleAuthProvider,
 } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+
+function isMobile() {
+  if (typeof window === "undefined") return false;
+  return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+}
 
 interface Props {
   isOpen: boolean;
@@ -118,12 +124,30 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: Props)
 
     try {
       const provider = new GoogleAuthProvider();
-      const cred = await signInWithPopup(auth, provider);
+      let cred;
+
+      try {
+        // Try popup first (works on desktop and some mobile browsers)
+        cred = await signInWithPopup(auth, provider);
+      } catch (popupErr: unknown) {
+        const code = (popupErr as { code?: string })?.code;
+        // If popup was blocked or unavailable, fall back to redirect
+        if (
+          code === "auth/popup-blocked" ||
+          code === "auth/popup-closed-by-user" ||
+          code === "auth/cancelled-popup-request" ||
+          isMobile()
+        ) {
+          await signInWithRedirect(auth, provider);
+          return; // Page will redirect, result handled in Nav via getRedirectResult
+        }
+        throw popupErr;
+      }
+
       const token = await cred.user.getIdToken();
       const data = await createSession(token);
 
       if (data.error === "USER_NOT_FOUND") {
-        // New Google user — redirect to signup flow
         handleClose();
         onSwitchToSignup();
         return;
@@ -138,8 +162,8 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: Props)
       handleClose();
       router.push("/dashboard");
       router.refresh();
-    } catch {
-      setErrors({ general: "Google sign-in failed." });
+    } catch (err: unknown) {
+      setErrors({ general: "Google sign-in failed. Please try again." });
     } finally {
       setLoading(false);
     }
@@ -154,7 +178,7 @@ export default function LoginModal({ isOpen, onClose, onSwitchToSignup }: Props)
       aria-labelledby="loginTitle"
       onClick={(e) => e.target === overlayRef.current && handleClose()}
     >
-      <div className="modal-panel bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[20px] p-10 w-full max-w-[440px] relative">
+      <div className="modal-panel bg-[var(--bg-elevated)] border border-[var(--border)] rounded-[20px] p-6 sm:p-10 w-full max-w-[440px] relative">
         <button
           onClick={handleClose}
           aria-label="Close"

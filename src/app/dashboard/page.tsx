@@ -80,7 +80,7 @@ export default async function DashboardPage() {
           .filter((cat) => cat.articles.length > 0 && cat.name.toLowerCase() !== "uploads")
           .map((cat) => ({ id: cat.id, name: cat.name }))}
       />
-      <main className="min-h-screen pt-40 pb-16 px-6 max-w-6xl mx-auto">
+      <main className="min-h-screen pt-48 pb-16 px-6 max-w-6xl mx-auto">
         <h1 className="font-[family-name:var(--font-display)] text-4xl mb-2 tracking-tight">
           Articles
         </h1>
